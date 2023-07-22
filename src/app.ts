@@ -22,7 +22,14 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.deferReply();
         command.execute(client, interaction);
     }
-})
+});
+
+client.on(Events.MessageCreate, async message => {
+    if (message.author.bot) return;
+    if (message.content.toLowerCase().includes("bruh")) {
+        await message.channel.send("bruh");
+    }
+});
 
 //deploy();
 
