@@ -2,6 +2,7 @@ import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, creat
 import { VoiceBasedChannel } from "discord.js";
 import ytdl from "ytdl-core";
 import { YoutubeMetadata } from "./utils/youtube";
+import { voiceManager } from "../app";
 
 //const ytdl = new YTDLPWrap('C:/Users/Noah/Programming/JavaScript/BarbarianBot_v2/binaries/yt-dlp.exe');
 
@@ -29,6 +30,15 @@ export class VoiceManager {
     get = (guildId: string) => {
         return this.connections.find(connection => connection.guildId == guildId);
     } 
+
+    destroy = (guildId: string) => {
+        let connection = this.get(guildId);
+        if (!connection) return;
+
+        let index = this.connections.indexOf(connection);
+        if (index == -1) return;
+        this.connections.splice(index, 1);
+    }
 
 }
 
@@ -92,12 +102,16 @@ export class VoiceConnection {
         if (!voiceConnection) return { type: VoiceConnectionStatusType.FAIL, message: "Not connected to a voice channel!"};
         
         console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] DISCONNECTED - Disconnected from voice (probably due to inactivity)`)
+        
         this.audioPlayer.stop();
         voiceConnection.disconnect();
+        voiceConnection.destroy();
+
         this.playing = undefined;
         this.queue = [];
 
         if (this.timeout) clearInterval(this.timeout);
+        voiceManager.destroy(this.guildId);
 
         return { type: VoiceConnectionStatusType.SUCCESS, message: "Disconnected from voice."};
     }
