@@ -1,8 +1,7 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
-import { createReadStream, createWriteStream } from "fs";
-import { YoutubeMetadata } from "./utils/youtube";
 import ytdl from "ytdl-core";
+import { YoutubeMetadata } from "./utils/youtube";
 
 //const ytdl = new YTDLPWrap('C:/Users/Noah/Programming/JavaScript/BarbarianBot_v2/binaries/yt-dlp.exe');
 
@@ -43,6 +42,7 @@ export class VoiceConnection {
     playing?: YoutubeMetadata;
     queue: YoutubeMetadata[];
 
+    private timeout?: NodeJS.Timeout;
     private resource?: AudioResource;
 
     constructor(guildId: string, channelId: string) {
@@ -52,15 +52,15 @@ export class VoiceConnection {
         this.queue = [];
 
         this.audioPlayer = createAudioPlayer();
-        this.audioPlayer.on(AudioPlayerStatus.Playing, () => console.log("Switched to playing.."))
+        this.audioPlayer.on(AudioPlayerStatus.Playing, () => console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] PLAYING - ${this.playing?.getUrl()}: ${this.playing?.getTitle()} by ${this.playing?.getAuthor()}`))
         this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-            console.log("Idling, playing next song..");
+            console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] SONG FINISHED - Changing to next song in queue`)
             this.next()
         });
 
         let voiceConnection = this.get();
         if (voiceConnection) voiceConnection.subscribe(this.audioPlayer);
-        else console.error("FAILED TO INIT VOICE CONNECTION SUBSCRIPTION!");
+        else console.error(`[GUILD ${this.guildId}] [VC ${this.channelId}] FAILED - Could not initialize voice connection.`);
     }
 
     get = () => getVoiceConnection(this.guildId);
@@ -90,19 +90,26 @@ export class VoiceConnection {
         let voiceConnection = this.get();
         if (!voiceConnection) return { type: VoiceConnectionStatusType.FAIL, message: "Not connected to a voice channel!"};
         
+        console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] DISCONNECTED - Disconnected from voice (probably due to inactivity)`)
         this.audioPlayer.stop();
         voiceConnection.disconnect();
+        this.playing = undefined;
+        this.queue = [];
+
+        if (this.timeout) clearInterval(this.timeout);
 
         return { type: VoiceConnectionStatusType.SUCCESS, message: "Disconnected from voice."};
     }
 
     next = () => {
         this.playing = this.queue.shift();
-        if (!this.playing) return { type: VoiceConnectionStatusType.FAIL, message: "There isn't a next song in the queue." };
+        if (!this.playing) {
+            this.timeout = setInterval(() => this.disconnect(), 1000 * 60 * 5);
+            return { type: VoiceConnectionStatusType.FAIL, message: "There isn't a next song in the queue." };
+        }
 
         this.load(this.playing.getUrl());
-        // this.paused = false;
-        // if (this.disconnectId) clearTimeout(this.disconnectId);
+        if (this.timeout) clearTimeout(this.timeout);
 
         return { type: VoiceConnectionStatusType.SUCCESS, message: `Playing \`${this.playing.getTitle()} - ${this.playing.getAuthor()}\`` };
     }

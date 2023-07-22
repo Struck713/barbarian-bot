@@ -3,13 +3,15 @@ import { Ping } from "../commands/ping";
 import { Play } from "../commands/voice/play";
 import { Skip } from "../commands/voice/skip";
 import { TOKEN, DEVELOPMENT } from '../../config.json';
+import { Queue } from "../commands/voice/queue";
+import { Stop } from "../commands/voice/stop";
 
 export interface Command {
     data: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">,
     execute: (client: Client, interaction: CommandInteraction) => void;
 }
 
-export const Commands: Command[] = [ Ping, Play, Skip ];
+export const Commands: Command[] = [ Ping, Play, Skip, Queue, Stop ];
 
 export const deploy = () => {
     // Construct and prepare an instance of the REST module
