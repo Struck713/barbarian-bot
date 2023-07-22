@@ -1,9 +1,9 @@
-import { Client, Events, GatewayIntentBits, REST, Routes } from "discord.js";
+import { Client, Events, GatewayIntentBits } from "discord.js";
 import { TOKEN } from '../config.json';
-import { Commands, deploy } from "./lib/command";
+import { Commands } from "./lib/command";
 import { VoiceManager } from "./lib/voice";
 
-const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates ] });
+export const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.MessageContent ] });
 export const voiceManager = new VoiceManager();
 
 client.once(Events.ClientReady, async client => {

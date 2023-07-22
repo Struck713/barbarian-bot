@@ -79,7 +79,8 @@ export class VoiceConnection {
         let voiceConnection = this.get();
         if (!voiceConnection) return false;
 
-        const stream = ytdl(url, { filter: "audioonly" });
+        const stream = ytdl(url, { filter: "audioonly" })
+            .on("error", _ => this.next());
         this.resource = createAudioResource(stream);
         this.audioPlayer.play(this.resource);
         
