@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import { YOUTUBE } from "../../../config.json";
+import { Entities } from './html';
 
 const YOUTUBE_SHORTENED_URL = "https://youtu.be/";
 const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$/;
@@ -14,7 +15,7 @@ const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
         videoData.snippet.title, 
         videoData.snippet.channelTitle, 
         `${YOUTUBE_SHORTENED_URL}${videoData.id.videoId}`, 
-        videoData.snippet.thumbnails.high.url
+        `https://i3.ytimg.com/vi/${videoData.id.videoId}/maxresdefault.jpg`
         );
     }
     
@@ -44,8 +45,8 @@ export class YoutubeMetadata {
     private thumbnailUrl: string;
     
     constructor(title: string, author: string, url: string, thumbnailUrl: string) {
-        this.title = title;
-        this.author = author;
+        this.title = Entities.decodeEntities(title);
+        this.author = Entities.decodeEntities(author);
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
     }
