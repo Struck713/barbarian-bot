@@ -1,10 +1,14 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import { TOKEN } from '../config.json';
+import { TOKEN, BRUH } from '../config.json';
 import { Commands } from "./lib/command";
 import { VoiceManager } from "./lib/voice";
+import { StateManager } from "./lib/state";
+import { BruhListener } from "./lib/listeners/bruh";
 
-export const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.MessageContent ] });
+export const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
 export const voiceManager = new VoiceManager();
+export const stateManager = new StateManager();
+export const bruhManager = new BruhListener();
 
 client.once(Events.ClientReady, async client => {
     console.log(`Logged in as ${client.user.tag}`);
@@ -26,9 +30,8 @@ client.on(Events.InteractionCreate, async interaction => {
 
 client.on(Events.MessageCreate, async message => {
     if (message.author.bot) return;
-    if (message.content.toLowerCase().includes("bruh")) {
-        await message.channel.send("bruh");
-    }
+    let content = message.content.toLowerCase();
+    if (message.channelId === BRUH.MESSAGE && content === "bruh") stateManager.bruhCount++;
 });
 
 //deploy();
