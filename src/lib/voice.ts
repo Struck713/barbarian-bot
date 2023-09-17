@@ -1,10 +1,12 @@
+import { YOUTUBE } from "../../config.json";
+
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
-import ytdl from "ytdl-core";
-import { YoutubeMetadata } from "./utils/youtube";
 import { voiceManager } from "../app";
+import { YoutubeMetadata } from "./utils/youtube";
 
-//const ytdl = new YTDLPWrap('C:/Users/Noah/Programming/JavaScript/BarbarianBot_v2/binaries/yt-dlp.exe');
+import YTDlpWrap from "yt-dlp-wrap";
+const ytdl = new YTDlpWrap(YOUTUBE.BINARY);
 
 export class VoiceManager {
 
@@ -89,9 +91,16 @@ export class VoiceConnection {
         let voiceConnection = this.get();
         if (!voiceConnection) return false;
 
-        const stream = ytdl(url, { filter: "audioonly" })
-            .on("error", _ => this.next());
-        this.resource = createAudioResource(stream);
+        const stream = await ytdl.exec(
+            [
+                "-o",
+                "-",
+                url,
+                "-f",
+                "bestaudio[ext=m4a],bestaudio[ext=webm]"
+            ]
+        );
+        this.resource = createAudioResource(stream.ytDlpProcess?.stdout!);
         this.audioPlayer.play(this.resource);
         
         return true;
