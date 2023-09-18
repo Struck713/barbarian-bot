@@ -38,7 +38,7 @@ export const Play: Command = {
             connection = voiceManager.join(user.voice.channel);
             connection.play(metadata);
     
-            await Embeds.send(interaction, embed => embed.setAuthor({ name: "Now playing "})
+            await Embeds.send(interaction, embed => embed.setAuthor({ name: "Now Playing"})
                 .setTitle(metadata.getTitle())
                 .setURL(metadata.getUrl())
                 .setDescription(`by ${metadata.getAuthor()}`)

@@ -1,12 +1,7 @@
-import { YOUTUBE } from "../../config.json";
-
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
-import { voiceManager } from "../app";
+import { voiceManager, ytdl } from "../app";
 import { YoutubeMetadata } from "./utils/youtube";
-
-import YTDlpWrap from "yt-dlp-wrap";
-const ytdl = new YTDlpWrap(YOUTUBE.BINARY);
 
 export class VoiceManager {
 
@@ -52,10 +47,10 @@ export class VoiceConnection {
     channelId: string;
 
     playing?: YoutubeMetadata;
+    resource?: AudioResource;
     queue: YoutubeMetadata[];
 
     private timeout?: NodeJS.Timeout;
-    private resource?: AudioResource;
 
     constructor(guildId: string, channelId: string) {
         this.guildId = guildId;

@@ -26,7 +26,7 @@ export const Skip: Command = {
         }
 
         let metadata = connection.skip();
-        await Embeds.send(interaction, embed => embed.setAuthor({ name: "Skipped - Now playing"})
+        await Embeds.send(interaction, embed => embed.setAuthor({ name: "Skipped - Now Playing"})
             .setTitle(metadata.getTitle())
             .setURL(metadata.getUrl())
             .setDescription(`by ${metadata.getAuthor()}`)

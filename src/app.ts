@@ -1,9 +1,12 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import { TOKEN, BRUH } from '../config.json';
+import { YOUTUBE, TOKEN, BRUH } from '../config.json';
 import { Commands } from "./lib/command";
 import { VoiceManager } from "./lib/voice";
 import { StateManager } from "./lib/state";
 import { BruhListener } from "./lib/listeners/bruh";
+
+import YTDlpWrap from "yt-dlp-wrap";
+export const ytdl = new YTDlpWrap(YOUTUBE.BINARY);
 
 export const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
 export const voiceManager = new VoiceManager();

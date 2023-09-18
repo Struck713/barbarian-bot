@@ -1,6 +1,7 @@
 import Axios from 'axios';
 import { YOUTUBE } from "../../../config.json";
-import { Entities } from './html';
+import { Entities, Time } from './misc';
+import { ytdl } from '../../app';
 
 const YOUTUBE_SHORTENED_URL = "https://youtu.be/";
 const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$/;
@@ -10,44 +11,41 @@ const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
     const res = await Axios.get(url).then(res => res.data).catch(_ => undefined);
     if (!res) return undefined;
 
-    let videoData = res.items[0];
-    return new YoutubeMetadata(
-        videoData.snippet.title, 
-        videoData.snippet.channelTitle, 
-        `${YOUTUBE_SHORTENED_URL}${videoData.id.videoId}`, 
-        `https://i3.ytimg.com/vi/${videoData.id.videoId}/maxresdefault.jpg`
-        );
-    }
+    let { id: { videoId } } = res.items[0];
+    return getMetadata(createShareUrl(videoId));
+ }
     
 const getVideoIdFromUrl = (url: string) => {
     let capture = YOUTUBE_URL_REGEX.exec(url);
-    return capture ? capture[6] : undefined;
+    return capture ? capture[6] : "";
 }
 
 const getMetadata = async (url: string): Promise<YoutubeMetadata | undefined> => {
-    let shortenedUrl = createShareUrl(url);
-    const urlMetadata: string = `https://www.youtube.com/oembed?url=${shortenedUrl}&format=json`;
-    const urlThumbnail: string = `https://i3.ytimg.com/vi/${getVideoIdFromUrl(url)}/maxresdefault.jpg`;
-    const res = await Axios.get(urlMetadata).then(res => res.data).catch(_ => undefined);
-    if (res) return new YoutubeMetadata(res.title, res.author_name, shortenedUrl, urlThumbnail);
+    let res = await ytdl.getVideoInfo(url).catch(_ => undefined);
+    if (res) return new YoutubeMetadata(res.fulltitle, res.channel, createShareUrl(res.display_id), res.thumbnail, res.duration);
     else return undefined;
 }
 
-const createShareUrl = (url: string): string => {
-    return `${YOUTUBE_SHORTENED_URL}${ getVideoIdFromUrl(url) }`;
-}
+const getThumbnailUrl = (id: string): string => `https://i3.ytimg.com/vi/${id}/maxresdefault.jpg`;
+const createShareUrl = (id: string): string => `${YOUTUBE_SHORTENED_URL}${id}`;
 
 export class YoutubeMetadata {
     
     private title: string;
     private author: string;
     private url: string;
+    private duration: number;
     private thumbnailUrl: string;
     
-    constructor(title: string, author: string, url: string, thumbnailUrl: string) {
+    constructor(title: string, 
+                author: string, 
+                url: string, 
+                thumbnailUrl: string,
+                duration: number) {
         this.title = Entities.decodeEntities(title);
         this.author = Entities.decodeEntities(author);
         this.url = url;
+        this.duration = duration;
         this.thumbnailUrl = thumbnailUrl;
     }
     
@@ -65,6 +63,10 @@ export class YoutubeMetadata {
     
     getThumbnailUrl(): string {
         return this.thumbnailUrl;
+    }
+
+    getDuration(): number {
+        return this.duration;
     }
     
 }
