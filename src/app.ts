@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
 import { YOUTUBE, TOKEN, BRUH } from '../config.json';
 import { Commands } from "./lib/command";
 import { VoiceManager } from "./lib/voice";
@@ -17,6 +17,17 @@ client.once(Events.ClientReady, async client => {
     console.log(`Logged in as ${client.user.tag}`);
     console.log(`| Registered ${Commands.length} commands!`);
     console.log(`| Voice Manager Status: ${voiceManager ? "ONLINE" : "OFFLINE"}`);
+
+    client.user.setPresence({
+        status: "idle",
+        activities: [
+            {
+                name: "The Brook & The Bluff",
+                type: ActivityType.Listening,
+                url: "https://open.spotify.com/track/7IN1eMlEGrcFUt2dNH1TQ2?si=61f9c4b1f4ea43ff",
+            }
+        ]
+    });
 });
 
 client.on(Events.InteractionCreate, async interaction => {
