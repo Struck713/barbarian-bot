@@ -22,9 +22,8 @@ client.once(Events.ClientReady, async client => {
         status: "idle",
         activities: [
             {
-                name: "The Brook & The Bluff",
-                type: ActivityType.Listening,
-                url: "https://open.spotify.com/track/7IN1eMlEGrcFUt2dNH1TQ2?si=61f9c4b1f4ea43ff",
+                name: "Roblox",
+                type: ActivityType.Playing
             }
         ]
     });

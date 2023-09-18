@@ -1,7 +1,8 @@
-import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, demuxProbe, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
 import { voiceManager, ytdl } from "../app";
 import { YoutubeMetadata } from "./utils/youtube";
+import { ChildProcessWithoutNullStreams } from "child_process";
 
 export class VoiceManager {
 
@@ -50,6 +51,7 @@ export class VoiceConnection {
     resource?: AudioResource;
     queue: YoutubeMetadata[];
 
+    private process?: ChildProcessWithoutNullStreams; 
     private timeout?: NodeJS.Timeout;
 
     constructor(guildId: string, channelId: string) {
@@ -86,7 +88,8 @@ export class VoiceConnection {
         let voiceConnection = this.get();
         if (!voiceConnection) return false;
 
-        const stream = await ytdl.exec(
+        if (this.process) this.process.kill();
+        const process = await ytdl.exec(
             [
                 "-o",
                 "-",
@@ -95,9 +98,13 @@ export class VoiceConnection {
                 "bestaudio[ext=m4a],bestaudio[ext=webm]"
             ]
         );
-        this.resource = createAudioResource(stream.ytDlpProcess?.stdout!);
-        this.audioPlayer.play(this.resource);
-        
+
+        if (process.ytDlpProcess) {
+            this.process = process.ytDlpProcess;
+            this.resource = createAudioResource(this.process.stdout);
+            this.audioPlayer.play(this.resource);
+        }
+
         return true;
     }
     
@@ -107,7 +114,11 @@ export class VoiceConnection {
         
         console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] DISCONNECTED - Disconnected from voice (probably due to inactivity)`)
         
+        if (this.process) this.process.kill();
+        this.process = undefined;
+
         this.audioPlayer.stop();
+        
         voiceConnection.disconnect();
         voiceConnection.destroy();
 
