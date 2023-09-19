@@ -46,7 +46,7 @@ export const Play: Command = {
                 .setImage(metadata.getThumbnailUrl()));
         }
 
-        const playPlaylist = async (metadata?: YoutubeMetadata[]) => {
+        const playPlaylist = async (metadatas?: YoutubeMetadata[]) => {
             if (!interaction.guild || !interaction.member) {
                 await Embeds.error(interaction, "You are not in a guild!");
                 return;
@@ -58,18 +58,18 @@ export const Play: Command = {
                 return;
             }
 
-            if (!metadata || metadata.length === 0) {
+            if (!metadatas || metadatas.length === 0) {
                 await Embeds.error(interaction, `An invalid playlist was provided.`);
                 return;
             }
 
             let connection = voiceManager.get(interaction.guild.id);
             if (connection) {
-                connection.play(...metadata);
+                connection.play(...metadatas);
                 await Embeds.send(interaction, embed => embed.setAuthor({ name: "Added to queue" })
-                    .setTitle(`Playlist with ${Text.number(others.length, "song")}`)
-                    .setThumbnail(metadata[0].getThumbnailUrl())
-                    .addFields(metadata.map((metadata, index) => 
+                    .setTitle(`Playlist with ${Text.number(metadatas.length, "song")}`)
+                    .setThumbnail(metadatas[0].getThumbnailUrl())
+                    .addFields(metadatas.map((metadata, index) => 
                         ({ 
                             name: `${index}. ${metadata.getTitle()}`, 
                             value: `by ${metadata.getAuthor()}` 
@@ -78,16 +78,17 @@ export const Play: Command = {
             }
     
             connection = voiceManager.join(user.voice.channel);
-            connection.play(...metadata);
+            connection.play(...metadatas);
     
-            let [ first, ...others ] = metadata;
+            let [ first, ...others ] = metadatas;
             await Embeds.send(interaction, embed => embed.setAuthor({ name: "Now Playing"})
                 .setTitle(first.getTitle())
                 .setURL(first.getUrl())
                 .setDescription(`
                     by ${first.getAuthor()}
+
                     Added ${Text.number(others.length, "other song")} to the queue:
-                `).addFields(others.map((other) => 
+                `).addFields(others.map(other => 
                         ({ 
                             name: `${other.getTitle()}`, 
                             value: `by ${other.getAuthor()}` 
