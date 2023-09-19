@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { CacheType, Colors, CommandInteraction, Interaction } from "discord.js";
+import { Style } from "./style";
 
 export namespace Embeds {
 
@@ -10,7 +11,7 @@ export namespace Embeds {
         return new EmbedBuilder()
                 .setColor(DEFAULT)
                 .setTimestamp()
-                .setFooter({ text: 'Barbarian v2', iconURL: 'https://cdn.discordapp.com/avatars/937850544255545394/5953a93c37c8de47f42058649c45e6ec?size=1024' });
+                .setFooter({ text: Style.ENGINE_VERSION, iconURL: Style.PROFILE_URL });
     }
 
     export const send = async (interaction: CommandInteraction<CacheType>, callback: (embed: EmbedBuilder) => EmbedBuilder) => { 

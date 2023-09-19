@@ -74,8 +74,8 @@ export class VoiceConnection {
 
     get = () => getVoiceConnection(this.guildId);
     
-    play = (metadata: YoutubeMetadata) => {
-        this.queue.push(metadata);
+    play = (...metadata: YoutubeMetadata[]) => {
+        this.queue.push(...metadata);
         if (!this.playing) this.next();
     };
 

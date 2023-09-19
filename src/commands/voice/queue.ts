@@ -42,7 +42,7 @@ export const Queue: Command = {
                 .setThumbnail(playing.getThumbnailUrl())
                 .addFields({ name: '\u200B', value: 'Next in the queue:' })
             
-            if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(8, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
+            if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(9, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
             else embed.addFields({ name: 'There is nothing next in the queue.', value: '\u200B' })
             
             await Embeds.send(interaction, () => embed);
