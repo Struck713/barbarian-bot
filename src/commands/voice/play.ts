@@ -71,7 +71,7 @@ export const Play: Command = {
                     .setThumbnail(metadatas[0].getThumbnailUrl())
                     .addFields(metadatas.map((metadata, index) => 
                         ({ 
-                            name: `${index}. ${metadata.getTitle()}`, 
+                            name: `${index + 1}. ${metadata.getTitle()}`, 
                             value: `by ${metadata.getAuthor()}` 
                         }))));
                 return;
