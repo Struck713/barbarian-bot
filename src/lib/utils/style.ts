@@ -1,5 +1,11 @@
+import { Colors } from "discord.js";
 
 export namespace Style {
+    export namespace Color {
+        export const DEFAULT = Colors.Yellow;
+        export const ERROR = Colors.Red;
+    }
+    
     export const NAME = "BarbarianBot";
     export const ENGINE_VERSION = "Barbarian v2";
     export const VERSION = "2.0";
