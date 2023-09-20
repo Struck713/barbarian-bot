@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import { YOUTUBE } from "../../../config.json";
-import { Entities, Time } from './misc';
+import { Text } from './misc';
 import { ytdl } from '../../app';
 
 const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$/;
@@ -67,8 +67,8 @@ export class YoutubeMetadata {
                 url: string, 
                 thumbnailUrl: string,
                 duration: number) {
-        this.title = Entities.decodeEntities(title);
-        this.author = Entities.decodeEntities(author);
+        this.title = Text.decodeEntities(title);
+        this.author = Text.decodeEntities(author);
         this.url = url;
         this.duration = duration;
         this.thumbnailUrl = thumbnailUrl;

@@ -5,11 +5,13 @@ import { VoiceManager } from "./lib/voice";
 import { StateManager } from "./lib/state";
 import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./lib/utils/embeds";
+import { PollManager } from "./commands/poll";
 export const ytdl = new YTDlpWrap(YOUTUBE.BINARY);
 
 export const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
 export const voiceManager = new VoiceManager();
 export const stateManager = new StateManager();
+export const pollManager = new PollManager();
 
 client.once(Events.ClientReady, async client => {
     console.log(`Logged in as ${client.user.tag}`);

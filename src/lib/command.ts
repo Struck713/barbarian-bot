@@ -1,10 +1,10 @@
-import { CommandInteraction, Client, REST, Routes, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, Client, REST, Routes, SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { TOKEN, DEVELOPMENT } from '../../config.json';
 import { COMMANDS } from "../commands";
 
 export interface Command {
     data: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">,
-    execute: (client: Client, interaction: CommandInteraction) => void;
+    execute: (client: Client, interaction: ChatInputCommandInteraction) => void;
 }
 
 export const deploy = () => {

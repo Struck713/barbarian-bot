@@ -2,7 +2,8 @@ import { Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { voiceManager } from "../../app";
 import { Command } from "../../lib/command";
 import { Embeds } from "../../lib/utils/embeds";
-import { Time } from "../../lib/utils/misc";
+import { Text } from "../../lib/utils/misc";
+import Time from "../../lib/utils/time";
 
 export const Queue: Command = {
     data: new SlashCommandBuilder()
@@ -40,7 +41,7 @@ export const Queue: Command = {
                     ${bar} ${Time.format(connection.resource?.playbackDuration)}/${Time.format(playing.getDuration(), "seconds")}
                 `)
                 .setThumbnail(playing.getThumbnailUrl())
-                .addFields({ name: '\u200B', value: 'Next in the queue:' })
+                .addFields({ name: '\u200B', value: `Next in the queue (${Text.number(queue.length - 1, "song")}):` })
             
             if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(9, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
             else embed.addFields({ name: 'There is nothing next in the queue.', value: '\u200B' })
