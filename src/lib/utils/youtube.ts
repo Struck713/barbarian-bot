@@ -7,11 +7,11 @@ const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocook
 const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
 
 const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
-    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=contentDetails&channelType=any&eventType=none&q=${query}&videoType=any&key=${YOUTUBE.KEY}`)
+    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${YOUTUBE.KEY}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
     if (!res) return undefined;
-    let { contentDetails: { videoId } } = res.items[0];
+    let { id: { videoId } } = res.items[0];
     return getMetadata(createShareUrl(videoId), false);
 }
 
