@@ -29,17 +29,19 @@ export const Poll: Command = {
     data: new SlashCommandBuilder()
         .addSubcommand(subcommand => 
             subcommand.setName('create')
+                      .addStringOption(option => option.setName('name').setDescription('The name of the poll.').setRequired(true))
                       .setDescription('Create a poll with up to 4 options.'))
         .addSubcommand(subcommand =>
             subcommand.setName('add')
                       .setDescription('Add an option to a poll.')
+                      .addStringOption(option => option.setName('name').setDescription('The name of the poll.').setRequired(true))
                       .addStringOption(option => option.setName('option').setDescription('The option to add.').setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand.setName('show')
+                    .addStringOption(option => option.setName('name').setDescription('The name of the poll.').setRequired(true))
                     .setDescription('Display the poll in chat.'))
         .setName('poll')
-        .setDescription('Manage or display a poll.')
-        .addStringOption(option => option.setName('name').setDescription('The name of the poll.').setRequired(true)),
+        .setDescription('Manage or display a poll.'),
     execute: async (client, interaction) => {
         let { value: name } = interaction.options.get("name", true);
         let poll = pollManager.get(name as string);
@@ -85,7 +87,7 @@ export const Poll: Command = {
                 return;
             }
 
-            let fields = poll.map((pair, index) => ({ name: `:${Text.NUMBERS[index] + 1}: ${pair.key}`, value: Text.number(pair.value, "vote") }));
+            let fields = poll.map((pair, index) => ({ name: `${Text.NUMBERS[index + 1]} ${pair.key}`, value: Text.number(pair.value, "vote") }));
             let message = await Embeds.send(interaction, embed => embed
                 .setAuthor({ name: "Poll" })
                 .setTitle(name as string)

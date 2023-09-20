@@ -6,5 +6,6 @@ import { Deploy } from "../commands/deploy";
 import { Status } from "../commands/status";
 import { Meme } from "./meme";
 import { Help } from "./help";
+import { Poll } from "./poll";
 
-export const COMMANDS = [ Help, Play, Skip, Queue, Stop, Meme, Status, Deploy ];
+export const COMMANDS = [ Help, Play, Skip, Queue, Stop, Meme, Poll, Status, Deploy ];
