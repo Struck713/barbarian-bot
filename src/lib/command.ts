@@ -15,12 +15,10 @@ export const deploy = () => {
     (async () => {
         try {
             console.log(`Started refreshing ${COMMANDS.length} application (/) commands.`);
-
-            console.log(COMMANDS.map(command => command.data.toJSON()))
-
             // The put method is used to fully refresh all commands in the guild with the current set
+            // Routes.applicationGuildCommands(DEVELOPMENT.APPLICATION_ID, DEVELOPMENT.GUILD_ID)
             const data = await rest.put(
-                Routes.applicationGuildCommands(DEVELOPMENT.APPLICATION_ID, DEVELOPMENT.GUILD_ID),
+                Routes.applicationCommands(DEVELOPMENT.APPLICATION_ID),
                 { body: COMMANDS.map(command => command.data) },
             ) as any[];
 
