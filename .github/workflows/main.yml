@@ -8,6 +8,8 @@ jobs:
       - name: Pull and build
         run: |
           cd ~/barbarian-bot/
+          echo ${GITHUB_ACTOR}
+          echo ${GITHUB_TOKEN}
           git fetch "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git checkout master
           git pull "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
