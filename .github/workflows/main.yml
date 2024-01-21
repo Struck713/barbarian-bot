@@ -5,13 +5,12 @@ jobs:
     name: Deploy to server
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
       - name: Pull and build
         run: |
           cd ~/barbarian-bot/
-          git fetch
+          git fetch "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_ACTOR}/${GITHUB_REPOSITORY}.git"
           git checkout master
-          git pull
+          git pull "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_ACTOR}/${GITHUB_REPOSITORY}.git"
           npm install
           npm run build
           pm2 restart barbarian-bot
