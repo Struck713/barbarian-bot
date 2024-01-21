@@ -4,3 +4,4 @@ config.json
 dist/
 binaries/
 state.lock
+*.token

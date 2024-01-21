@@ -41,7 +41,7 @@ export const Queue: Command = {
                     ${bar} ${Time.format(connection.resource?.playbackDuration)}/${Time.format(playing.getDuration(), "seconds")}
                 `)
                 .setThumbnail(playing.getThumbnailUrl())
-                .addFields({ name: '\u200B', value: `Next in the queue (${Text.number(queue.length - 1, "song")}):` })
+                .addFields({ name: '\u200B', value: `Next in the queue (${Text.number(queue.length, "song")}):` })
             
             if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(9, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
             else embed.addFields({ name: 'There is nothing next in the queue.', value: '\u200B' })

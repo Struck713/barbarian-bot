@@ -40,7 +40,7 @@ const REPLIES = [
 ]
 
 client.on(Events.MessageCreate, async message => {
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.03) {
         await message.reply({ files: [ REPLIES[Math.floor(Math.random() * REPLIES.length)] ]});
         return;
     }
