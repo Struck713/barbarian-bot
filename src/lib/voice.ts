@@ -1,4 +1,4 @@
-import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, demuxProbe, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
 import { voiceManager, ytdl } from "../app";
 import { YoutubeMetadata } from "./utils/youtube";
@@ -110,7 +110,7 @@ export class VoiceConnection {
     
     disconnect = () => {
         let voiceConnection = this.get();
-        if (!voiceConnection) return { type: VoiceConnectionStatusType.FAIL, message: "Not connected to a voice channel!"};
+        if (!voiceConnection) return;
         
         console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] DISCONNECTED - Disconnected from voice (probably due to inactivity)`)
         
@@ -127,35 +127,17 @@ export class VoiceConnection {
 
         if (this.timeout) clearInterval(this.timeout);
         voiceManager.destroy(this.guildId);
-
-        return { type: VoiceConnectionStatusType.SUCCESS, message: "Disconnected from voice."};
     }
 
     next = () => {
         this.playing = this.queue.shift();
         if (!this.playing) {
             this.timeout = setInterval(() => this.disconnect(), 1000 * 60 * 5);
-            return { type: VoiceConnectionStatusType.FAIL, message: "There isn't a next song in the queue." };
+            return;
         }
 
         this.load(this.playing.getUrl());
         if (this.timeout) clearTimeout(this.timeout);
-
-        return { type: VoiceConnectionStatusType.SUCCESS, message: `Playing \`${this.playing.getTitle()} - ${this.playing.getAuthor()}\`` };
     }
-
-}
-
-export interface VoiceConnectionStatus {
-    type: VoiceConnectionStatusType; 
-    message: string;
-    metadata?: YoutubeMetadata;
-    time?: string;
-}
-
-export enum VoiceConnectionStatusType {
-
-    SUCCESS = 1,
-    FAIL = 0
 
 }
