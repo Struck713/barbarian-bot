@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../lib/command";
-import { Embeds } from "../lib/utils/embeds";
-import { Style } from "../lib/utils/style";
-import Time from "../lib/utils/time";
+import { Command } from "../../lib/command";
+import { Embeds } from "../../lib/utils/embeds";
+import { Style } from "../../lib/utils/style";
+import Time from "../../lib/utils/time";
 
 const STARTUP_TIME = Date.now();
 

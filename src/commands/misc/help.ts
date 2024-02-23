@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../lib/command";
-import { Embeds } from "../lib/utils/embeds";
-import commands from ".";
+import { Command } from "../../lib/command";
+import { Embeds } from "../../lib/utils/embeds";
+import commands from "..";
 
 export const Help: Command = {
     data: new SlashCommandBuilder()

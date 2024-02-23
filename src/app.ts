@@ -4,7 +4,7 @@ import commands from "./commands";
 import { StateManager } from "./lib/state";
 import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./lib/utils/embeds";
-import { PollManager } from "./commands/poll";
+import { PollManager } from "./commands/admin/poll";
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
 export const client = new Client({ 

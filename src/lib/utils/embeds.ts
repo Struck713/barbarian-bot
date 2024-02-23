@@ -12,7 +12,11 @@ export namespace Embeds {
             .setColor(Style.Color.DEFAULT)
             .setTimestamp()
             .setFooter({ text: Style.ENGINE_VERSION, iconURL: Style.PROFILE_URL });
-        return Object.assign(embed, { send: (interaction: CommandInteraction<CacheType>) => { return interaction.followUp({ embeds: [embed] }); } });
+        return Object.assign(embed, {  
+            send: (interaction: CommandInteraction<CacheType>) => { 
+                return interaction.followUp({ embeds: [embed] }); 
+            } 
+        });
     }
 
     export const error = async (interaction: CommandInteraction<CacheType>, message: string, subtitle?: string) => {

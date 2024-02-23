@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../lib/command";
-import { Embeds } from "../lib/utils/embeds";
+import { Command } from "../../lib/command";
+import { Embeds } from "../../lib/utils/embeds";
 
 export const Oobinate: Command = {
     data: new SlashCommandBuilder()

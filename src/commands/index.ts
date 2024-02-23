@@ -2,12 +2,11 @@ import { Play } from "../commands/voice/play";
 import { Skip } from "../commands/voice/skip"
 import { Queue } from "../commands/voice/queue";
 import { Stop } from "../commands/voice/stop";
-import { Deploy } from "../commands/deploy";
-import { Status } from "../commands/status";
-import { Meme } from "./meme";
-import { Help } from "./help";
-import { Poll } from "./poll";
-import { Oobinate } from "./oob";
+import { Deploy } from "./admin/deploy";
+import { Status } from "./misc/status";
+import { Meme } from "./silly/meme";
+import { Help } from "./misc/help";
+import { Oobinate } from "./silly/oob";
 
-const commands = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Poll, Status, Deploy ];
+const commands = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Status, Deploy ];
 export default commands;

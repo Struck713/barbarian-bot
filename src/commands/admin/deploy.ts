@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command, deploy } from "../lib/command";
-import { Embeds } from "../lib/utils/embeds";
-import commands from ".";
+import { Command, deploy } from "../../lib/command";
+import { Embeds } from "../../lib/utils/embeds";
+import commands from "..";
 
 const MY_SNOWFLAKE = "140520164629151744";
 
