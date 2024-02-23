@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { Colors, SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
 import { Embeds } from "../../utils/embeds";
 import { PermissionLevel, getNameFromPermissionLevel, permissionManager } from "../../lib/permissions";
@@ -39,7 +39,7 @@ export default <Command>{
         } else if (subcommand == "view") {
             const target = interaction.options.getUser("user", true);
             const permissionLevel = permissionManager.getPermissionLevel(interaction.guild!.id, target.id);
-            
+
             await Embeds.create()
                 .setTitle("Permission Level")
                 .setDescription(`${target.toString()}'s permission level is \`${getNameFromPermissionLevel(permissionLevel)}\``)

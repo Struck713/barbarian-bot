@@ -14,29 +14,26 @@ export default <Command>{
         .setDescription('Deploys slash commands for the bot.'),
     permission: PermissionLevel.ADMIN,
     execute: async (_, user, interaction) => {
-        if (user.id === MY_SNOWFLAKE) {
-            const rest = new REST().setToken(token);
-            console.log(`Started refreshing ${commands.length} application (/) commands.`);
-            const data = await rest.put(
-                Routes.applicationCommands(development.application_id),
-                { body: commands.map(command => command.metadata) },
-            ) as any[];
+        const rest = new REST().setToken(token);
+        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+        const data = await rest.put(
+            Routes.applicationCommands(development.application_id),
+            { body: commands.map(command => command.metadata) },
+        ) as any[];
 
-            let response = JSON.stringify(data, null, 2);
-            if (response.length > 2000) response = response.substring(0, 2000) + "...";
+        let response = JSON.stringify(data, null, 2);
+        if (response.length > 2000) response = response.substring(0, 2000) + "...";
 
-            await Embeds.create()
-                .setTitle("Deployed commands")
-                .setAuthor({ name: `${commands.length} commands have been deployed.` })
-                .setDescription(`
-                    \`\`\`JSON
-                    ${response}
-                    \`\`\`
-                `)
-                .send(interaction);
+        await Embeds.create()
+            .setTitle("Deployed commands")
+            .setAuthor({ name: `${commands.length} commands have been deployed.` })
+            .setDescription(`
+                \`\`\`JSON
+                ${response}
+                \`\`\`
+            `)
+            .send(interaction);
 
-            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-
-        } else await Embeds.error(interaction, "You do not have permission to execute this command!");
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     },
 }
