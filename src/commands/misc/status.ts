@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
 import { Embeds } from "../../utils/embeds";
-import { Style } from "../../utils/style";
+import * as Style from "../../utils/style";
 import Time from "../../utils/time";
 
 const startup = Date.now();

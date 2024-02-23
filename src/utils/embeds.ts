@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { CacheType, CommandInteraction, Message } from "discord.js";
-import { Style } from "./style";
+import * as Style from "./style";
 
 type SendEmbed = { send: (interaction: CommandInteraction<CacheType>) => Promise<Message<boolean>> };
 type EmbedBuilderWithSend = EmbedBuilder & SendEmbed;
@@ -8,6 +8,7 @@ type EmbedBuilderWithSend = EmbedBuilder & SendEmbed;
 export namespace Embeds {
 
     export const create = (): EmbedBuilderWithSend => {
+        // I don't know if this is cool or messy, I like it though
         let embed = new EmbedBuilder()
             .setColor(Style.Color.DEFAULT)
             .setTimestamp()
