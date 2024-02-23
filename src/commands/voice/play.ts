@@ -1,11 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
-import { Embeds } from "../../lib/utils/embeds";
-import YouTubeAPI, { YoutubeMetadata } from "../../lib/utils/youtube";
-import { Text } from "../../lib/utils/misc";
+import { Embeds } from "../../utils/embeds";
+import YouTubeAPI from "../../utils/youtube";
 import * as VoiceManager from "../../lib/voice";
 
-export const Play: Command = {
+export default <Command>{
     data: new SlashCommandBuilder()
         .setName("play")
         .setDescription("Play a song by search.")

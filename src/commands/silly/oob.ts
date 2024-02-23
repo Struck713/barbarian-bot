@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
-import { Embeds } from "../../lib/utils/embeds";
+import { Embeds } from "../../utils/embeds";
 
-export const Oobinate: Command = {
+export default <Command>{
     data: new SlashCommandBuilder()
         .setName('oobinate')
         .setDescription('Converts normal text into oob text.')

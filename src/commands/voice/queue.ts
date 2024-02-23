@@ -1,11 +1,11 @@
 import { Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import * as VoiceManager from "../../lib/voice";
 import { Command } from "../../lib/command";
-import { Embeds } from "../../lib/utils/embeds";
-import { Text } from "../../lib/utils/misc";
-import Time from "../../lib/utils/time";
+import { Embeds } from "../../utils/embeds";
+import { Text } from "../../utils/misc";
+import Time from "../../utils/time";
 
-export const Queue: Command = {
+export default <Command>{
     data: new SlashCommandBuilder()
         .setName("queue")
         .setDescription("View the current song queue."),

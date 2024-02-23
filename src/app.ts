@@ -1,8 +1,8 @@
 import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
-import { youtube, TOKEN } from '../config.json';
+import { youtube, token } from '../config.json';
 import commands from "./commands";
 import YTDlpWrap from "yt-dlp-wrap";
-import { Embeds } from "./lib/utils/embeds";
+import { Embeds } from "./utils/embeds";
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
 export const client = new Client({ 
@@ -39,4 +39,4 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-client.login(TOKEN);
+client.login(token);

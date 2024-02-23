@@ -1,9 +1,9 @@
 import { AttachmentBuilder, SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
 import axios from "axios";
-import { Embeds } from "../../lib/utils/embeds";
+import { Embeds } from "../../utils/embeds";
 
-export const Meme: Command = {
+export default <Command>{
     data: new SlashCommandBuilder()
         .setName('meme')
         .setDescription('Create a meme with top and bottom text.')

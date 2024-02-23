@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
-import { Embeds } from "../../lib/utils/embeds";
+import { Embeds } from "../../utils/embeds";
 import * as VoiceManager from "../../lib/voice";
 
-export const Skip: Command = {
+export default <Command>{
     data: new SlashCommandBuilder()
         .setName("skip")
         .setDescription("Skip to the next song in the queue."),

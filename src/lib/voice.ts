@@ -1,7 +1,7 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
 import { ytdl } from "../app";
-import { YoutubeMetadata } from "./utils/youtube";
+import { SongMetadata } from "../utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
 
 const connections: VoiceConnection[] = [];
@@ -39,9 +39,9 @@ export class VoiceConnection {
     guildId: string;
     channelId: string;
 
-    playing?: YoutubeMetadata;
+    playing?: SongMetadata;
     resource?: AudioResource;
-    queue: YoutubeMetadata[];
+    queue: SongMetadata[];
 
     private process?: ChildProcessWithoutNullStreams; 
     private timeout?: NodeJS.Timeout;
@@ -61,7 +61,7 @@ export class VoiceConnection {
 
     get = () => getVoiceConnection(this.guildId);
     
-    play = (...metadata: YoutubeMetadata[]) => {
+    play = (...metadata: SongMetadata[]) => {
         this.queue.push(...metadata);
         if (!this.playing) this.next();
     }

@@ -1,12 +1,12 @@
 import Axios from 'axios';
-import { youtube } from "../../../config.json";
+import { youtube } from "../../config.json";
 import { Text } from './misc';
-import { ytdl } from '../../app';
+import { ytdl } from '../app';
 
 const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$/;
 const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
 
-const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
+const search = async (query: string): Promise<SongMetadata | undefined> => {
     const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${youtube.api_key}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
@@ -15,7 +15,7 @@ const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
     return getMetadata(createShareUrl(videoId), false);
 }
 
-const getPlaylistMetadata = async (url: string): Promise<YoutubeMetadata[] | undefined> => {
+const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefined> => {
     let playlistParse = YOUTUBE_PLAYLIST_QUERY_REGEX.exec(url);
     if (!playlistParse || !playlistParse[1]) return undefined;
 
@@ -33,7 +33,7 @@ const getPlaylistMetadata = async (url: string): Promise<YoutubeMetadata[] | und
  * @param cleanse If this URL is already in the share format, set this to false to skip the cleanse .
  * @returns A YoutubeMetadata object if the URL is valid, otherwise undefined.
  */
-const getMetadata = async (url: string, cleanse: boolean = true): Promise<YoutubeMetadata | undefined> => {
+const getMetadata = async (url: string, cleanse: boolean = true): Promise<SongMetadata | undefined> => {
     if (cleanse) {
         let capture = YOUTUBE_URL_REGEX.exec(url);
         if (!capture || !capture[6]) return undefined;
@@ -41,7 +41,7 @@ const getMetadata = async (url: string, cleanse: boolean = true): Promise<Youtub
     }
 
     let res = await ytdl.getVideoInfo(url).catch(_ => undefined);
-    if (res) return new YoutubeMetadata(res.fulltitle, res.channel, url, res.thumbnail, res.duration);
+    if (res) return new SongMetadata(res.fulltitle, res.channel, url, res.thumbnail, res.duration);
     else return undefined;
 }
 
@@ -54,7 +54,7 @@ const isPlaylist = (url: string): boolean => {
 const getThumbnailUrl = (id: string): string => `https://i3.ytimg.com/vi/${id}/maxresdefault.jpg`;
 const createShareUrl = (id: string): string => `https://youtu.be/${id}`;
 
-export class YoutubeMetadata {
+export class SongMetadata {
     
     private title: string;
     private author: string;
