@@ -1,10 +1,8 @@
 import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
 import { youtube, TOKEN } from '../config.json';
 import commands from "./commands";
-import { StateManager } from "./lib/state";
 import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./lib/utils/embeds";
-import { PollManager } from "./commands/admin/poll";
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
 export const client = new Client({ 
@@ -15,9 +13,6 @@ export const client = new Client({
         GatewayIntentBits.MessageContent
     ]
 });
-
-export const stateManager = new StateManager();
-export const pollManager = new PollManager();
 
 client.once(Events.ClientReady, async client => {
     console.log(`Logged in as ${client.user.tag}`);
