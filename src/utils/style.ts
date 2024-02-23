@@ -1,11 +1,13 @@
 import { Colors } from "discord.js";
 
+import { style } from "../../config.json";
+
 export namespace Color {
-    export const DEFAULT = Colors.Yellow;
-    export const ERROR = Colors.Red;
+    export const DEFAULT = style.colors.primary;
+    export const ERROR = style.colors.error;
 }
 
-export const NAME = "BarbarianBot";
-export const ENGINE_VERSION = "Barbarian v2";
-export const VERSION = "2.0";
-export const PROFILE_URL = "https://cdn.discordapp.com/avatars/937850544255545394/dfa825b8b7cb035ef2577d847c22326e?size=1024" // https://i.imgur.com/risXNrf.png
+export const NAME = style.name;
+export const ENGINE_VERSION = style.engine.name;
+export const VERSION = style.engine.version;
+export const PROFILE_URL = style.engine.image

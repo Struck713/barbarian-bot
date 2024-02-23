@@ -9,6 +9,7 @@ If you are self-hosting this bot, you need to do some configuration:
 - You will need to have a YTDLP binary installed for this to work, you can get one [here](https://github.com/yt-dlp/yt-dlp/releases).
 - Once you configure (below), you can run `/deploy` to deploy all of the slash commands to the bot.
 
+Here is an example `config.json` (needs to be in the root folder of the project):
 ```JSON
 {
     "token": "Your discord bot token",
@@ -19,6 +20,18 @@ If you are self-hosting this bot, you need to do some configuration:
     "youtube": {
         "api_key": "Youtube API key",
         "binary_path": "Absolute path to YTDLP"
+    },
+    "style": {
+        "name": "Bot name",
+        "engine": {
+            "name": "Engine name",
+            "version": "1.0",
+            "image": "Engine URL",
+        },
+        "colors": {
+            "primary": 16705372,
+            "error": 15548997
+        }
     }
 }
 ```
