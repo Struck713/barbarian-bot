@@ -1,5 +1,5 @@
 import { Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { voiceManager } from "../../app";
+import * as VoiceManager from "../../lib/voice";
 import { Command } from "../../lib/command";
 import { Embeds } from "../../lib/utils/embeds";
 import { Text } from "../../lib/utils/misc";
@@ -9,7 +9,7 @@ export const Queue: Command = {
     data: new SlashCommandBuilder()
         .setName("queue")
         .setDescription("View the current song queue."),
-    execute: async (client, interaction) => {
+    execute: async (_, interaction) => {
 
         if (!interaction.guild || !interaction.member) {
             await Embeds.error(interaction, "You are not in a guild!");
@@ -17,12 +17,12 @@ export const Queue: Command = {
         }
 
         let user = await interaction.guild.members.cache.get(interaction.member.user.id);
-        if (!user || !user.voice || !user.voice.channel) {
+        if (!user?.voice.channel) {
             await Embeds.error(interaction, "You are not in a voice channel!");
             return;
         }
         
-        let connection = voiceManager.get(interaction.guild.id);
+        let connection = VoiceManager.getVoiceFromGuildId(interaction.guild.id);
         if (!connection) {
             await Embeds.error(interaction, "I am not in a voice channel!");
             return;
@@ -46,7 +46,7 @@ export const Queue: Command = {
             if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(9, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
             else embed.addFields({ name: 'There is nothing next in the queue.', value: '\u200B' })
             
-            await Embeds.send(interaction, () => embed);
+            await embed.send(interaction);
             return;
         }
 

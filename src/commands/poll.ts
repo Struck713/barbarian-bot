@@ -54,10 +54,11 @@ export const Poll: Command = {
             }
 
             pollManager.create(name as string, []);
-            await Embeds.send(interaction, embed => embed
+            await Embeds.create()
                 .setAuthor({ name: "Poll" })
                 .setTitle(name as string)
-                .setDescription("Poll has been created."));
+                .setDescription("Poll has been created.")
+                .send(interaction);
             return;
         }
 
@@ -74,10 +75,11 @@ export const Poll: Command = {
 
             let { value: option } = interaction.options.get("option", true);
             poll.push({ key: option as string, value: 0 });
-            await Embeds.send(interaction, embed => embed
+            await Embeds.create()
                 .setAuthor({ name: "Poll" })
                 .setTitle(name as string)
-                .setDescription(`Added option, \`${option}\`.`));
+                .setDescription(`Added option, \`${option}\`.`)
+                .send(interaction);
             return;
         }
 
@@ -88,10 +90,11 @@ export const Poll: Command = {
             }
 
             let fields = poll.map((pair, index) => ({ name: `${Text.NUMBERS[index + 1]} ${pair.key}`, value: Text.number(pair.value, "vote") }));
-            let message = await Embeds.send(interaction, embed => embed
+            let message = await Embeds.create()
                 .setAuthor({ name: "Poll" })
                 .setTitle(name as string)
-                .addFields(fields));
+                .addFields(fields)
+                .send(interaction);
             await Promise.all(poll.map((_, index) => message.react(Text.NUMBERS[index + 1])));
             return;
         }

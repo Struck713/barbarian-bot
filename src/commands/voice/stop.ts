@@ -1,14 +1,13 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
-import YouTubeAPI, { YoutubeMetadata } from "../../lib/utils/youtube";
-import { voiceManager } from "../../app";
 import { Embeds } from "../../lib/utils/embeds";
+import * as VoiceManager from "../../lib/voice";
 
 export const Stop: Command = {
     data: new SlashCommandBuilder()
         .setName("stop")
         .setDescription("Disconnect from voice and clear the queue."),
-    execute: async (client, interaction) => {
+    execute: async (_, interaction) => {
 
         if (!interaction.guild || !interaction.member) {
             await Embeds.error(interaction, "You are not in a guild!");
@@ -16,15 +15,18 @@ export const Stop: Command = {
         }
 
         let user = await interaction.guild.members.cache.get(interaction.member.user.id);
-        if (!user || !user.voice || !user.voice.channel) {
+        if (!user?.voice.channel) {
             await Embeds.error(interaction, "You are not in a voice channel!");
             return;
         }
 
-        let connection = voiceManager.get(interaction.guild.id);
+        let connection = VoiceManager.getVoiceFromGuildId(interaction.guild.id);
         if (connection) {
             connection.disconnect();
-            await Embeds.send(interaction, embed => embed.setAuthor({ name: "Disconnected" }).setDescription("Disconnected from voice and cleared the queue."));
+            await Embeds.create()
+                .setAuthor({ name: "Disconnected" })
+                .setDescription("Disconnected from voice and cleared the queue.")
+                .send(interaction);
             return;
         }
 

@@ -9,10 +9,11 @@ export const Oobinate: Command = {
         .addStringOption(option => option.setName("text").setRequired(true).setDescription("The text to oobinate.")),
     execute: async (client, interaction) => {
         let text = interaction.options.get("text", true);
-        await Embeds.send(interaction, embed => embed
+        await Embeds.create()
             .setTitle("Oobinator")
             .setDescription(`
                 \`${(text.value as string).replace(/[aeiouAEIOU]/g, "oob")}\`
-            `));
+            `)
+            .send(interaction);
     },
 }

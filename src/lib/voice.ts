@@ -1,43 +1,35 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
-import { voiceManager, ytdl } from "../app";
+import { ytdl } from "../app";
 import { YoutubeMetadata } from "./utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
 
-export class VoiceManager {
+const connections: VoiceConnection[] = [];
 
-    private connections: VoiceConnection[];
+export const initializeVoice = (channel: VoiceBasedChannel) => {
+    let { id, guild } = channel;
+    joinVoiceChannel({
+        channelId: id,
+        guildId: guild.id,
+        adapterCreator: guild.voiceAdapterCreator
+    });
 
-    constructor() {
-        this.connections = [];
-    }
+    let connection = new VoiceConnection(guild.id, id);
+    connections.push(connection);
+    return connection;
+}
 
-    join = (channel: VoiceBasedChannel) => {
-        let { id, guild } = channel;
-        joinVoiceChannel({
-            channelId: id,
-            guildId: guild.id,
-            adapterCreator: guild.voiceAdapterCreator
-        });
+export const getVoiceFromGuildId = (guildId: string) => {
+    return connections.find(connection => connection.guildId == guildId);
+} 
 
-        let connection = new VoiceConnection(guild.id, id);
-        this.connections.push(connection);
-        return connection;
-    }
+export const destroyVoiceFromGuildId = (guildId: string) => {
+    let connection = getVoiceFromGuildId(guildId);
+    if (!connection) return;
 
-    get = (guildId: string) => {
-        return this.connections.find(connection => connection.guildId == guildId);
-    } 
-
-    destroy = (guildId: string) => {
-        let connection = this.get(guildId);
-        if (!connection) return;
-
-        let index = this.connections.indexOf(connection);
-        if (index == -1) return;
-        this.connections.splice(index, 1);
-    }
-
+    let index = connections.indexOf(connection);
+    if (index == -1) return;
+    connections.splice(index, 1);
 }
 
 export class VoiceConnection {
@@ -61,15 +53,10 @@ export class VoiceConnection {
         this.queue = [];
 
         this.audioPlayer = createAudioPlayer();
-        this.audioPlayer.on(AudioPlayerStatus.Playing, () => console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] PLAYING - ${this.playing?.getUrl()}: ${this.playing?.getTitle()} by ${this.playing?.getAuthor()}`))
-        this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-            console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] SONG FINISHED - Changing to next song in queue`)
-            this.next()
-        });
+        this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.next());
 
         let voiceConnection = this.get();
         if (voiceConnection) voiceConnection.subscribe(this.audioPlayer);
-        else console.error(`[GUILD ${this.guildId}] [VC ${this.channelId}] FAILED - Could not initialize voice connection.`);
     }
 
     get = () => getVoiceConnection(this.guildId);
@@ -77,7 +64,7 @@ export class VoiceConnection {
     play = (...metadata: YoutubeMetadata[]) => {
         this.queue.push(...metadata);
         if (!this.playing) this.next();
-    };
+    }
 
     skip = () => {
         this.next();
@@ -112,8 +99,6 @@ export class VoiceConnection {
         let voiceConnection = this.get();
         if (!voiceConnection) return;
         
-        console.log(`[GUILD ${this.guildId}] [VC ${this.channelId}] DISCONNECTED - Disconnected from voice (probably due to inactivity)`)
-        
         if (this.process) this.process.kill();
         this.process = undefined;
 
@@ -126,7 +111,7 @@ export class VoiceConnection {
         this.queue = [];
 
         if (this.timeout) clearInterval(this.timeout);
-        voiceManager.destroy(this.guildId);
+        destroyVoiceFromGuildId(this.guildId);
     }
 
     next = () => {

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { Command, deploy } from "../lib/command";
 import { Embeds } from "../lib/utils/embeds";
-import { COMMANDS } from ".";
+import commands from ".";
 
 const MY_SNOWFLAKE = "140520164629151744";
 
@@ -9,12 +9,13 @@ export const Deploy: Command = {
     data: new SlashCommandBuilder()
         .setName('deploy')
         .setDescription('Deploys slash commands for the bot.'),
-    execute: async (client, interaction) => {
+    execute: async (_, interaction) => {
         if (interaction.user.id === MY_SNOWFLAKE) {
             deploy();
-            await Embeds.send(interaction, embed => embed
+            await Embeds.create()
                     .setTitle("Deployed commands")
-                    .setDescription(`${COMMANDS.length} commands have been deployed.`));
+                    .setDescription(`${commands.length} commands have been deployed.`)
+                    .send(interaction);
         } else await Embeds.error(interaction, "You do not have permission to execute this command!");
     },
 }

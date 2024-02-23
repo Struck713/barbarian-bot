@@ -8,6 +8,6 @@ import { Meme } from "./meme";
 import { Help } from "./help";
 import { Poll } from "./poll";
 import { Oobinate } from "./oob";
-import { Minecraft } from "./minecraft";
 
-export const COMMANDS = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Poll, Status, Deploy, Minecraft ]; 
+const commands = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Poll, Status, Deploy ];
+export default commands;

@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { YOUTUBE } from "../../../config.json";
+import { youtube } from "../../../config.json";
 import { Text } from './misc';
 import { ytdl } from '../../app';
 
@@ -7,7 +7,7 @@ const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocook
 const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
 
 const search = async (query: string): Promise<YoutubeMetadata | undefined> => {
-    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${YOUTUBE.KEY}`)
+    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${youtube.api_key}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
     if (!res) return undefined;
@@ -19,7 +19,7 @@ const getPlaylistMetadata = async (url: string): Promise<YoutubeMetadata[] | und
     let playlistParse = YOUTUBE_PLAYLIST_QUERY_REGEX.exec(url);
     if (!playlistParse || !playlistParse[1]) return undefined;
 
-    const res = await Axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistParse[1]}&maxResults=15&key=${YOUTUBE.KEY}`)
+    const res = await Axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistParse[1]}&maxResults=15&key=${youtube.api_key}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
     if (!res) return undefined;
