@@ -7,10 +7,10 @@ import Time from "../../utils/time";
 const startup = Date.now();
 
 export default <Command>{
-    data: new SlashCommandBuilder()
+    metadata: new SlashCommandBuilder()
         .setName('status')
         .setDescription('Shows the current status for the bot.'),
-    execute: async (_, interaction) => {
+    execute: async (_, user, interaction) => {
         let sent = Date.now();
         await Embeds.create()
             .setTitle("Status")

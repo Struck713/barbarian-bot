@@ -6,18 +6,17 @@ import { Text } from "../../utils/misc";
 import Time from "../../utils/time";
 
 export default <Command>{
-    data: new SlashCommandBuilder()
+    metadata: new SlashCommandBuilder()
         .setName("queue")
         .setDescription("View the current song queue."),
-    execute: async (_, interaction) => {
+    execute: async (_, user, interaction) => {
 
-        if (!interaction.guild || !interaction.member) {
+        if (!interaction.guild) {
             await Embeds.error(interaction, "You are not in a guild!");
             return;
         }
 
-        let user = await interaction.guild.members.cache.get(interaction.member.user.id);
-        if (!user?.voice.channel) {
+        if (!user.voice.channel) {
             await Embeds.error(interaction, "You are not in a voice channel!");
             return;
         }

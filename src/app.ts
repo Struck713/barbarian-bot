@@ -1,8 +1,11 @@
-import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
+import { ActivityType, Client, Events, GatewayIntentBits, PermissionsBitField } from "discord.js";
 import { youtube, token } from '../config.json';
 import commands from "./commands";
 import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./utils/embeds";
+import { permissionManager } from "./lib/permissions";
+import * as Style from "./utils/style";
+
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
 export const client = new Client({ 
@@ -29,13 +32,34 @@ client.once(Events.ClientReady, async client => {
 
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {
-        const command = commands.find(command => command.data.name === interaction.commandName);
+        const command = commands.find(command => command.metadata.name === interaction.commandName);
         if (!command) {
             await Embeds.error(interaction, "Something went terribly wrong! Contact the developer.");
             return;
         }
         await interaction.deferReply();
-        command.execute(client, interaction);
+
+        const guild = interaction.guild;
+        if (!guild) {
+            await Embeds.error(interaction, `${Style.NAME} does not current support DMs!`);
+            return;
+        }
+
+        const user = guild.members.cache.get(interaction.user.id);
+        if (!user) {
+            await Embeds.error(interaction, "You aren't a member of this server?? Something went wrong.");
+            return;
+        }
+
+        if (command.permission && !user.permissions.has(PermissionsBitField.All, true)) {
+            const level = permissionManager.getPermissionLevel(guild.id, user.id);
+            if (command.permission > level) {
+                await Embeds.error(interaction, "You do not have permission to execute this command!");
+                return;
+            }
+        }
+
+        command.execute(client, user, interaction);
     }
 });
 

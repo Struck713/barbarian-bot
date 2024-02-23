@@ -4,13 +4,13 @@ import axios from "axios";
 import { Embeds } from "../../utils/embeds";
 
 export default <Command>{
-    data: new SlashCommandBuilder()
+    metadata: new SlashCommandBuilder()
         .setName('meme')
         .setDescription('Create a meme with top and bottom text.')
         .addStringOption(option => option.setName("top").setRequired(true).setDescription("The text on the top of the meme."))
         .addAttachmentOption(option => option.setName("image").setRequired(true).setDescription("The image to create a meme out of."))
         .addStringOption(option => option.setName("bottom").setRequired(false).setDescription("The text on the bottom of the meme.")),
-    execute: async (client, interaction) => {
+    execute: async (client, user, interaction) => {
         let top = interaction.options.get("top", true);
         let bottom = interaction.options.get("bottom", false);
         let { attachment } = interaction.options.get("image", true);
