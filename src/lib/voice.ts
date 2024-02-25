@@ -3,6 +3,7 @@ import { VoiceBasedChannel } from "discord.js";
 import { ytdl } from "../app";
 import { SongMetadata } from "../utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
+import { Stats, statsManager } from "./stats";
 
 const connections: VoiceConnection[] = [];
 
@@ -66,7 +67,7 @@ export class VoiceConnection {
         if (!this.playing) this.next();
     }
 
-    skip = () => {
+    skip = () => {        
         this.next();
         return this.playing!;
     };
@@ -76,7 +77,7 @@ export class VoiceConnection {
         if (!voiceConnection) return false;
 
         if (this.process) this.process.kill();
-        const process = await ytdl.exec(
+        const process = ytdl.exec(
             [
                 "-o",
                 "-",
@@ -115,6 +116,11 @@ export class VoiceConnection {
     }
 
     next = () => {
+
+        const playbackDuration = this.resource?.playbackDuration ?? 0;
+        statsManager.inc(Stats.SECONDS_PLAYED, playbackDuration / 1000);
+        statsManager.inc(Stats.SONGS_PLAYED);
+
         this.playing = this.queue.shift();
         if (!this.playing) {
             this.timeout = setInterval(() => this.disconnect(), 1000 * 60 * 5);

@@ -5,6 +5,7 @@ import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./utils/embeds";
 import { permissionManager } from "./lib/permissions";
 import * as Style from "./utils/style";
+import { statsManager } from "./lib/stats";
 
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
@@ -64,3 +65,13 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.login(token);
+
+process.on('SIGINT', () => {
+    console.log(`Logging out of ${client.user?.tag}.`);
+    client.destroy();
+
+    permissionManager.save();
+    statsManager.save();
+
+    process.exit();
+});

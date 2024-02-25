@@ -8,6 +8,7 @@ import Meme from "./silly/meme";
 import Help from "./misc/help";
 import Oobinate from "./silly/oob";
 import Perms from "./admin/perms";
+import Stats from "./voice/stats";
 
-const commands = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Status, Deploy, Perms ];
+const commands = [ Help, Play, Skip, Queue, Stop, Meme, Oobinate, Status, Deploy, Perms, Stats ];
 export default commands;

@@ -10,7 +10,7 @@ namespace Time {
     };
 
     export const PROGRESS_UNFILLED = ":white_large_square:";
-    export const PROGRESS_FILLED = ":yellow_square:";
+    export const PROGRESS_FILLED = ":blue_square:";
 
     export const decode = (str: string): number => {
         let [minutes, seconds] = str.split(":");

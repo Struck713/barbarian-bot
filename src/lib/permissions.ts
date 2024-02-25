@@ -1,5 +1,4 @@
 import fs from "fs";
-import { get } from "http";
 
 export enum PermissionLevel {
     MEMBER = 0,
@@ -17,7 +16,7 @@ class PermissionManager {
     private table: Map<string, Map<string, PermissionLevel>>;
 
     constructor() {
-        this.table = this.loadPermissions();
+        this.table = this.load();
     }
 
     public setPermissionLevel(guildId: string, userId: string, level: PermissionLevel) {
@@ -39,7 +38,7 @@ class PermissionManager {
         return PermissionLevel.MEMBER;
     }
 
-    public savePermissions = () => {
+    public save = () => {
         let output: any = {};
         this.table.forEach((value, key) => {
             output[key] = Array.from(value.entries()).map(([user, level]) => ({ user, level }));
@@ -47,7 +46,7 @@ class PermissionManager {
         fs.writeFileSync("permissions.json", JSON.stringify(output));
     }
 
-    private loadPermissions = () => {
+    private load = () => {
         if (!fs.existsSync("permissions.json")) {
             fs.writeFileSync("permissions.json", JSON.stringify([]));
         }
