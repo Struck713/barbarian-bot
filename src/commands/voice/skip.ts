@@ -27,10 +27,10 @@ export default <Command>{
         let metadata = connection.skip();
         await Embeds.create()
             .setAuthor({ name: "Skipped - Now Playing"})
-            .setTitle(metadata.getTitle())
-            .setURL(metadata.getUrl())
-            .setDescription(`by ${metadata.getAuthor()}`)
-            .setImage(metadata.getThumbnailUrl())
+            .setTitle(metadata.title)
+            .setURL(metadata.url)
+            .setDescription(`by ${metadata.author}`)
+            .setImage(metadata.thumbnail_url)
             .send(interaction);
     },
 }

@@ -3,9 +3,9 @@ import { youtube, token } from '../config.json';
 import commands from "./commands";
 import YTDlpWrap from "yt-dlp-wrap";
 import { Embeds } from "./utils/embeds";
-import { permissionManager } from "./lib/permissions";
 import * as Style from "./utils/style";
-import { statsManager } from "./lib/stats";
+import { db } from "./lib/database";
+import { getRole } from "./lib/roles";
 
 
 export const ytdl = new YTDlpWrap(youtube.binary_path);
@@ -52,9 +52,8 @@ client.on(Events.InteractionCreate, async interaction => {
             return;
         }
 
-        if (command.permission && !user.permissions.has(PermissionsBitField.All, true)) {
-            const level = permissionManager.getPermissionLevel(guild.id, user.id);
-            if (command.permission > level) {
+        if (command.role && !user.permissions.has(PermissionsBitField.All, true)) {
+            if (command.role > await getRole(guild.id, user.id)) {
                 await Embeds.error(interaction, "You do not have permission to execute this command!");
                 return;
             }
@@ -69,9 +68,6 @@ client.login(token);
 process.on('SIGINT', () => {
     console.log(`Logging out of ${client.user?.tag}.`);
     client.destroy();
-
-    permissionManager.save();
-    statsManager.save();
-
+    db.destroy();
     process.exit();
 });

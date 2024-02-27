@@ -2,17 +2,32 @@ import { AttachmentBuilder, SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
 import axios from "axios";
 import { Embeds } from "../../utils/embeds";
+import { db } from "../../lib/database";
+
+const assortValues = (top: string | null, bottom: string | null) => {
+    if (top && bottom) return [top, bottom];
+    if (bottom) return [bottom];
+    if (top) return [top];
+    return [];
+}
+
 
 export default <Command>{
     metadata: new SlashCommandBuilder()
         .setName('meme')
         .setDescription('Create a meme with top and bottom text.')
-        .addStringOption(option => option.setName("top").setRequired(true).setDescription("The text on the top of the meme."))
         .addAttachmentOption(option => option.setName("image").setRequired(true).setDescription("The image to create a meme out of."))
+        .addStringOption(option => option.setName("top").setRequired(false).setDescription("The text on the top of the meme."))
         .addStringOption(option => option.setName("bottom").setRequired(false).setDescription("The text on the bottom of the meme.")),
     execute: async (client, user, interaction) => {
-        let top = interaction.options.get("top", true);
-        let bottom = interaction.options.get("bottom", false);
+
+        if (!interaction.guild) {
+            await Embeds.error(interaction, "You are not in a guild!");
+            return;
+        }
+
+        let top = interaction.options.getString("top", false);
+        let bottom = interaction.options.getString("bottom", false);
         let { attachment } = interaction.options.get("image", true);
 
         if (!attachment) {
@@ -20,10 +35,16 @@ export default <Command>{
             return;
         }
 
-        const res = await axios.post("https://api.memegen.link/images/custom", 
+        const list = assortValues(top, bottom);
+        if (!list) {
+            await Embeds.error(interaction, "You must provide at least one of the top or bottom text.");
+            return;
+        }
+
+        const res = await axios.post("https://api.memegen.link/images/custom",
             {
                 "background": attachment.url,
-                "text": bottom ? [ top.value, bottom.value ] : [ top.value ],
+                "text": list,
                 "extension": "png",
                 "redirect": false
             },
@@ -39,6 +60,15 @@ export default <Command>{
             return;
         }
 
-        interaction.editReply({ files: [ new AttachmentBuilder(res.data.url) ] });
+        const meme = res.data.url;
+        await db.insertInto("memes")
+            .values({
+                user_id: user.id,
+                guild_id: interaction.guild.id,
+                top: top ?? "",
+                bottom: bottom ?? "",
+                image_url: meme
+            }).execute();
+        interaction.editReply({ files: [ new AttachmentBuilder(meme) ] });
     },
 }

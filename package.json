@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "npm run build && node dist/src/app.js",
+    "bootstrap": "npm run build && node dist/src/bootstrap.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\""
   },
   "author": "Struck713",
@@ -14,12 +15,15 @@
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.0",
     "axios": "^1.4.0",
+    "better-sqlite3": "^9.4.3",
     "discord.js": "^14.11.0",
     "ffmpeg-static": "^5.2.0",
+    "kysely": "^0.27.2",
     "libsodium-wrappers": "^0.7.11",
     "yt-dlp-wrap": "^2.3.12"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.9",
     "@types/node": "^20.4.1",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1",

@@ -30,19 +30,24 @@ export default <Command>{
         let { playing, queue } = connection;
         if (playing) {
 
-            let bar = Time.progress(15, connection.resource?.playbackDuration, playing.getDuration() * 1000);
+            let bar = Time.progress(15, connection.resource?.playbackDuration, playing.duration * 1000);
             let embed = Embeds.create()
                 .setAuthor({ name: 'Now Playing' })
-                .setTitle(playing.getTitle())
-                .setURL(playing.getUrl())
+                .setTitle(playing.title)
+                .setURL(playing.url)
                 .setDescription(`
-                    by ${playing.getAuthor()} \n
-                    ${bar} ${Time.format(connection.resource?.playbackDuration)}/${Time.format(playing.getDuration(), "seconds")}
+                    by ${playing.author} \n
+                    ${bar} ${Time.format(connection.resource?.playbackDuration)}/${Time.format(playing.duration, "seconds")}
                 `)
-                .setThumbnail(playing.getThumbnailUrl())
+                .setThumbnail(playing.thumbnail_url)
                 .addFields({ name: '\u200B', value: `Next in the queue (${Text.number(queue.length, "song")}):` })
             
-            if (queue.length > 0) embed.addFields(queue.slice(0, Math.min(9, queue.length)).map((metadata, index) => ({ name: `${index + 2}.  ${metadata.getTitle()}`, value: `by ${metadata.getAuthor()}` })));
+            if (queue.length > 0) 
+                embed.addFields(queue.slice(0, Math.min(9, queue.length))
+                     .map((metadata, index) => ({ 
+                        name: `${index + 2}.  ${metadata.title}`, 
+                        value: `by ${metadata.author}` 
+                     })));
             else embed.addFields({ name: 'There is nothing next in the queue.', value: '\u200B' })
             
             await embed.send(interaction);

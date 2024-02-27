@@ -12,19 +12,19 @@ const search = async (query: string): Promise<SongMetadata | undefined> => {
                            .catch(_ => undefined);
     if (!res) return undefined;
     let { id: { videoId } } = res.items[0];
-    return getMetadata(createShareUrl(videoId), false);
+    return getMetadata(query, createShareUrl(videoId), false);
 }
 
-const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefined> => {
-    let playlistParse = YOUTUBE_PLAYLIST_QUERY_REGEX.exec(url);
-    if (!playlistParse || !playlistParse[1]) return undefined;
+// const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefined> => {
+//     let playlistParse = YOUTUBE_PLAYLIST_QUERY_REGEX.exec(url);
+//     if (!playlistParse || !playlistParse[1]) return undefined;
 
-    const res = await Axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistParse[1]}&maxResults=15&key=${youtube.api_key}`)
-                           .then(res => res.data)
-                           .catch(_ => undefined);
-    if (!res) return undefined;
-    return await Promise.all(res.items.map((item: any) => getMetadata(createShareUrl(item.contentDetails.videoId), false)));
-}
+//     const res = await Axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistParse[1]}&maxResults=15&key=${youtube.api_key}`)
+//                            .then(res => res.data)
+//                            .catch(_ => undefined);
+//     if (!res) return undefined;
+//     return await Promise.all(res.items.map((item: any) => getMetadata(createShareUrl(item.contentDetails.videoId), false)));
+// }
     
 /**
  * Get the metadata associated with a YouTube video, using its URL.
@@ -33,7 +33,7 @@ const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefi
  * @param cleanse If this URL is already in the share format, set this to false to skip the cleanse .
  * @returns A YoutubeMetadata object if the URL is valid, otherwise undefined.
  */
-const getMetadata = async (url: string, cleanse: boolean = true): Promise<SongMetadata | undefined> => {
+const getMetadata = async (search: string, url: string, cleanse: boolean = true): Promise<SongMetadata | undefined> => {
     if (cleanse) {
         let capture = YOUTUBE_URL_REGEX.exec(url);
         if (!capture || !capture[6]) return undefined;
@@ -41,7 +41,7 @@ const getMetadata = async (url: string, cleanse: boolean = true): Promise<SongMe
     }
 
     let res = await ytdl.getVideoInfo(url).catch(_ => undefined);
-    if (res) return new SongMetadata(res.fulltitle, res.channel, url, res.thumbnail, res.duration);
+    if (res) return new SongMetadata(search, res.fulltitle, res.channel, url, res.thumbnail, res.duration);
     else return undefined;
 }
 
@@ -56,44 +56,27 @@ const createShareUrl = (id: string): string => `https://youtu.be/${id}`;
 
 export class SongMetadata {
     
-    private title: string;
-    private author: string;
-    private url: string;
-    private duration: number;
-    private thumbnailUrl: string;
+    search: string;
+    title: string;
+    author: string;
+    url: string;
+    duration: number;
+    thumbnail_url: string;
     
-    constructor(title: string, 
+    constructor(search: string,
+                title: string, 
                 author: string, 
                 url: string, 
                 thumbnailUrl: string,
                 duration: number) {
+        this.search = search;
         this.title = Text.decodeEntities(title);
         this.author = Text.decodeEntities(author);
         this.url = url;
         this.duration = duration;
-        this.thumbnailUrl = thumbnailUrl;
-    }
-    
-    getTitle(): string {
-        return this.title;
-    }
-    
-    getAuthor(): string {
-        return this.author;
-    }
-    
-    getUrl(): string {
-        return this.url;
-    }
-    
-    getThumbnailUrl(): string {
-        return this.thumbnailUrl;
-    }
-
-    getDuration(): number {
-        return this.duration;
+        this.thumbnail_url = thumbnailUrl;
     }
     
 }
 
-export default { search, getMetadata, isPlaylist, getPlaylistMetadata, createShareUrl };
+export default { search, getMetadata, isPlaylist, createShareUrl };

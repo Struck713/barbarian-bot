@@ -3,7 +3,7 @@ import { VoiceBasedChannel } from "discord.js";
 import { ytdl } from "../app";
 import { SongMetadata } from "../utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
-import { Stats, statsManager } from "./stats";
+import { db } from "./database";
 
 const connections: VoiceConnection[] = [];
 
@@ -22,7 +22,7 @@ export const initializeVoice = (channel: VoiceBasedChannel) => {
 
 export const getVoiceFromGuildId = (guildId: string) => {
     return connections.find(connection => connection.guildId == guildId);
-} 
+}
 
 export const destroyVoiceFromGuildId = (guildId: string) => {
     let connection = getVoiceFromGuildId(guildId);
@@ -36,7 +36,7 @@ export const destroyVoiceFromGuildId = (guildId: string) => {
 export class VoiceConnection {
 
     audioPlayer: AudioPlayer;
-    
+
     guildId: string;
     channelId: string;
 
@@ -44,7 +44,7 @@ export class VoiceConnection {
     resource?: AudioResource;
     queue: SongMetadata[];
 
-    private process?: ChildProcessWithoutNullStreams; 
+    private process?: ChildProcessWithoutNullStreams;
     private timeout?: NodeJS.Timeout;
 
     constructor(guildId: string, channelId: string) {
@@ -61,13 +61,22 @@ export class VoiceConnection {
     }
 
     get = () => getVoiceConnection(this.guildId);
-    
-    play = (...metadata: SongMetadata[]) => {
-        this.queue.push(...metadata);
+
+    play = (user_id: string, metadata: SongMetadata) => {
+        this.queue.push(metadata);
+        db.insertInto("voice")
+            .values({
+                guild_id: this.guildId,
+                user_id,
+                search: metadata.search,
+                video_url: metadata.url,
+                video_name: metadata.title
+            })
+            .execute();
         if (!this.playing) this.next();
     }
 
-    skip = () => {        
+    skip = () => {
         this.next();
         return this.playing!;
     };
@@ -95,16 +104,16 @@ export class VoiceConnection {
 
         return true;
     }
-    
+
     disconnect = () => {
         let voiceConnection = this.get();
         if (!voiceConnection) return;
-        
+
         if (this.process) this.process.kill();
         this.process = undefined;
 
         this.audioPlayer.stop();
-        
+
         voiceConnection.disconnect();
         voiceConnection.destroy();
 
@@ -117,9 +126,8 @@ export class VoiceConnection {
 
     next = () => {
 
-        const playbackDuration = this.resource?.playbackDuration ?? 0;
-        statsManager.inc(Stats.SECONDS_PLAYED, playbackDuration / 1000);
-        statsManager.inc(Stats.SONGS_PLAYED);
+        // const playbackDuration = this.resource?.playbackDuration ?? 0;
+        // TODO: track if song was skipped!
 
         this.playing = this.queue.shift();
         if (!this.playing) {
@@ -127,7 +135,7 @@ export class VoiceConnection {
             return;
         }
 
-        this.load(this.playing.getUrl());
+        this.load(this.playing.url);
         if (this.timeout) clearTimeout(this.timeout);
     }
 

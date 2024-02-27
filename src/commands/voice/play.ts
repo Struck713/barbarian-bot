@@ -28,28 +28,29 @@ export default <Command>{
             return;
         }
         
+        const user_id = user.id;
         let connection = VoiceManager.getVoiceFromGuildId(interaction.guild.id);
         if (connection) {
-            connection.play(metadata);
+            connection.play(user_id, metadata);
             Embeds.create()
                 .setAuthor({ name: "Added to queue" })
-                .setTitle(metadata.getTitle())
-                .setURL(metadata.getUrl())
-                .setDescription(`by ${metadata.getAuthor()}`)
-                .setImage(metadata.getThumbnailUrl())
+                .setTitle(metadata.title)
+                .setURL(metadata.url)
+                .setDescription(`by ${metadata.author}`)
+                .setImage(metadata.thumbnail_url)
                 .send(interaction);
             return;
         }
 
         connection = VoiceManager.initializeVoice(user.voice.channel);
-        connection.play(metadata);
+        connection.play(user_id, metadata);
 
         await Embeds.create()
             .setAuthor({ name: "Now Playing"})
-            .setTitle(metadata.getTitle())
-            .setURL(metadata.getUrl())
-            .setDescription(`by ${metadata.getAuthor()}`)
-            .setImage(metadata.getThumbnailUrl())
+            .setTitle(metadata.title)
+            .setURL(metadata.url)
+            .setDescription(`by ${metadata.author}`)
+            .setImage(metadata.thumbnail_url)
             .send(interaction);
     },
 }

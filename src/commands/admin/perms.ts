@@ -1,7 +1,7 @@
-import { Colors, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../lib/command";
+import { Role, getNameFromRole, getRole, setRole } from "../../lib/roles";
 import { Embeds } from "../../utils/embeds";
-import { PermissionLevel, getNameFromPermissionLevel, permissionManager } from "../../lib/permissions";
 
 export default <Command>{
     metadata: new SlashCommandBuilder()
@@ -11,9 +11,9 @@ export default <Command>{
                 .setName("set")
                 .setDescription("Sets a user's permission level")
                 .addUserOption(option => option.setName("user").setDescription("The user to set the permission level for").setRequired(true))
-                .addStringOption(option => option.setName("level")
+                .addStringOption(option => option.setName("role")
                     .setDescription("The permission level to set the user to")
-                    .setChoices(...Object.keys(PermissionLevel).map(level => ({ name: level, value: level })))
+                    .setChoices(...Object.keys(Role).map(level => ({ name: level, value: level })))
                     .setRequired(true))
         )
         .addSubcommand(subcommand => subcommand
@@ -22,27 +22,33 @@ export default <Command>{
             .addUserOption(option => option.setName("user").setDescription("The user to set the permission level for").setRequired(true))
         )
         .setDMPermission(false),
-    permission: PermissionLevel.ADMIN,
+    role: Role.ADMINISTRATOR,
     execute: async (_, user, interaction) => {
+
+        if (!interaction.guild) {
+            await Embeds.error(interaction, "You are not in a guild!");
+            return; // This shouldnt happen
+        }
+
         const subcommand = interaction.options.getSubcommand();
         if (subcommand == "set") {
-            const level = interaction.options.getString("level", true);
+            const selectedRole = interaction.options.getString("role", true);
             const target = interaction.options.getUser("user", true);
-            const permissionLevel = PermissionLevel[level as keyof typeof PermissionLevel];
+            const role = Role[selectedRole as keyof typeof Role];
 
-            permissionManager.setPermissionLevel(interaction.guild!.id, target.id, permissionLevel);
+            await setRole(interaction.guild.id, target.id, role);
 
             await Embeds.create()
                 .setTitle("Permission Level")
-                .setDescription(`${target.toString()}'s permission level has been changed to \`${getNameFromPermissionLevel(permissionLevel)}\``)
+                .setDescription(`${target.toString()}'s permission level has been changed to \`${getNameFromRole(role)}\``)
                 .send(interaction);
         } else if (subcommand == "view") {
             const target = interaction.options.getUser("user", true);
-            const permissionLevel = permissionManager.getPermissionLevel(interaction.guild!.id, target.id);
+            const role = await getRole(interaction.guild.id, target.id);
 
             await Embeds.create()
                 .setTitle("Permission Level")
-                .setDescription(`${target.toString()}'s permission level is \`${getNameFromPermissionLevel(permissionLevel)}\``)
+                .setDescription(`${target.toString()}'s permission level is \`${getNameFromRole(role)}\``)
                 .send(interaction);
         }
     },
