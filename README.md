@@ -7,7 +7,8 @@ A bot that can play music! It's as simple as it sounds.
 If you are self-hosting this bot, you need to do some configuration:
 
 - You will need to have a YTDLP binary installed for this to work, you can get one [here](https://github.com/yt-dlp/yt-dlp/releases).
-- Once you configure (below), you can run `/deploy` to deploy all of the slash commands to the bot.
+- Once you configure (below), you have to bootstrap the SQLite3 database using `npm run bootstrap`.
+- Then, you can run `/deploy` to deploy all of the slash commands to the bot.
 
 Here is an example `config.json` (needs to be in the root folder of the project):
 ```JSON
@@ -21,12 +22,15 @@ Here is an example `config.json` (needs to be in the root folder of the project)
         "api_key": "Youtube API key",
         "binary_path": "Absolute path to YTDLP"
     },
+    "database": {
+        "path": "database.db"
+    },
     "style": {
         "name": "Bot name",
         "engine": {
             "name": "Engine name",
             "version": "1.0",
-            "image": "Engine URL",
+            "image": "Engine URL"
         },
         "colors": {
             "primary": 16705372,

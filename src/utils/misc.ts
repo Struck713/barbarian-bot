@@ -1,3 +1,4 @@
+import { exec } from "child_process";
 
 export type Pair<K, V> = { key: K, value: V };
 
@@ -37,4 +38,11 @@ export namespace Text {
         });
     };
 
+}
+
+export namespace Git {
+    export const getVersionHash = () => promisifyCommand("git rev-parse --short HEAD") as Promise<string>;
+
+    const promisifyCommand = (command: string) =>
+        new Promise((res, rej) => exec(command, (error, out) => error ? rej(error) : res(out.trim())));
 }
