@@ -19,7 +19,7 @@ export default <Command>{
         .addAttachmentOption(option => option.setName("image").setRequired(true).setDescription("The image to create a meme out of."))
         .addStringOption(option => option.setName("top").setRequired(false).setDescription("The text on the top of the meme."))
         .addStringOption(option => option.setName("bottom").setRequired(false).setDescription("The text on the bottom of the meme.")),
-    execute: async (client, user, interaction) => {
+    execute: async (_, user, interaction) => {
 
         if (!interaction.guild) {
             await Embeds.error(interaction, "You are not in a guild!");
@@ -41,6 +41,7 @@ export default <Command>{
             return;
         }
 
+        // generate meme 
         const res = await axios.post("https://api.memegen.link/images/custom",
             {
                 "background": attachment.url,
@@ -59,16 +60,20 @@ export default <Command>{
             await Embeds.error(interaction, "Failed to generate meme. (This probably was the APIs fault, not yours.)");
             return;
         }
-
-        const meme = res.data.url;
+        
+        // get the returned URL
+        const url = res.data.url;
         await db.insertInto("memes")
             .values({
                 user_id: user.id,
                 guild_id: interaction.guild.id,
                 top: top ?? "",
                 bottom: bottom ?? "",
-                image_url: meme
+                image_url: url
             }).execute();
+        
+        // get the actual image 
+        const meme = await axios.get(url, { responseType: "arraybuffer" }).then(res => Buffer.from(res.data, 'binary'))
         interaction.editReply({ files: [ new AttachmentBuilder(meme) ] });
     },
 }
