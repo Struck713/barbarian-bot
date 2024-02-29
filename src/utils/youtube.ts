@@ -4,15 +4,14 @@ import { Text } from './misc';
 import { ytdl } from '../app';
 
 const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$/;
-const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
+// const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
 
 const search = async (query: string): Promise<SongMetadata | undefined> => {
     const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${youtube.api_key}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
-    if (!res) return undefined;
-    let { id: { videoId } } = res.items[0];
-    return getMetadata(query, createShareUrl(videoId), false);
+    if (!res?.items[0]) return undefined;
+    return getMetadata(query, createShareUrl(res.items[0].id.videoId), false);
 }
 
 // const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefined> => {

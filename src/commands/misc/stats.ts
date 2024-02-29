@@ -18,7 +18,7 @@ export default <Command>{
         const type = interaction.options.getString("type", true);
 
         if (type === "voice") {
-            const all = await db.selectFrom("voice")
+            const all = await db.selectFrom("memes")
                 .selectAll()
                 .execute();
 
