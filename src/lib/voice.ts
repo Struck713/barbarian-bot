@@ -45,7 +45,6 @@ export class VoiceConnection {
     queue: SongMetadata[];
 
     private process?: ChildProcessWithoutNullStreams;
-    private timeout?: NodeJS.Timeout;
 
     constructor(guildId: string, channelId: string) {
         this.guildId = guildId;
@@ -120,7 +119,6 @@ export class VoiceConnection {
         this.playing = undefined;
         this.queue = [];
 
-        if (this.timeout) clearInterval(this.timeout);
         destroyVoiceFromGuildId(this.guildId);
     }
 
@@ -131,12 +129,11 @@ export class VoiceConnection {
 
         this.playing = this.queue.shift();
         if (!this.playing) {
-            this.timeout = setInterval(() => this.disconnect(), 1000 * 60 * 5);
+            this.disconnect();
             return;
         }
 
         this.load(this.playing.url);
-        if (this.timeout) clearTimeout(this.timeout);
     }
 
 }
