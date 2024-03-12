@@ -3,7 +3,8 @@ import { Command } from "../../lib/command";
 import { Embeds } from "../../utils/embeds";
 import Time from "../../utils/time";
 import { Text } from "../../utils/misc";
-import { db } from "../../lib/database";
+import { VoiceTable, db } from "../../lib/database";
+import { sql } from "kysely";
 
 export default <Command>{
     metadata: new SlashCommandBuilder()
@@ -18,18 +19,39 @@ export default <Command>{
         const type = interaction.options.getString("type", true);
 
         if (type === "voice") {
-            const all = await db.selectFrom("voice")
-                .selectAll()
-                .execute();
+            const count = await db.selectFrom("voice")
+                .select(({ fn, val, ref }) => [
+                    fn.countAll<number>().as("counted")
+                ])
+                .execute()
+                .then(all => all[0].counted)
+                .catch(_ => null);
+
+            const recent = await sql<VoiceTable>`SELECT v1.id, v1.video_name, v1.video_url, v1.created
+                                                    FROM ${sql.table("voice")} v1 INNER JOIN 
+                                                    (
+                                                        SELECT MAX(v2.created) as latest, v2.id
+                                                            FROM ${sql.table("voice")} v2
+                                                            GROUP BY v2.id
+                                                    ) derived 
+                                                    ON v1.created = derived.latest 
+                                                    AND v1.id = derived.id;`
+                .execute(db)
+                .then(all => all.rows[0])
+                .catch(_ => null);
+
+            if (!count || !recent) {
+                await Embeds.error(interaction, "Failed to retreive song data!");
+                return;
+            }
 
             await Embeds.create()
                 .setTitle("Voice Statistics")
-                .setAuthor({ name: `${all.length} songs have been played.` })
-                .setDescription(`
-                    \`\`\`JSON
-                    ${JSON.stringify(all, null, 2)}
-                    \`\`\`
-                `.trim())
+                .setAuthor({ name: `${count} songs have been played.` })
+                .addFields([
+                    { name: "Recent song", value: `${recent.video_name}`, inline: true },
+                    { name: "URL", value: `${recent.video_url}`, inline: true }
+                ])
                 .send(interaction);
             return;
         }
