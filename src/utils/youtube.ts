@@ -78,4 +78,4 @@ export class SongMetadata {
     
 }
 
-export default { search, getMetadata, isPlaylist, createShareUrl };
+export default { search, getMetadata, getThumbnailUrl, isPlaylist, createShareUrl };

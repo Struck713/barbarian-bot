@@ -5,6 +5,7 @@ import Time from "../../utils/time";
 import { Text } from "../../utils/misc";
 import { VoiceTable, db } from "../../lib/database";
 import { sql } from "kysely";
+import youtube from "../../utils/youtube";
 
 export default <Command>{
     metadata: new SlashCommandBuilder()
@@ -52,6 +53,7 @@ export default <Command>{
                     { name: "Recent song", value: `${recent.video_name}`, inline: true },
                     { name: "URL", value: `${recent.video_url}`, inline: true }
                 ])
+                .setImage(youtube.getThumbnailUrl(recent.video_url))
                 .send(interaction);
             return;
         }
