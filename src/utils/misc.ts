@@ -5,6 +5,8 @@ export type Pair<K, V> = { key: K, value: V };
 export namespace Text {
     
     export const NUMBERS = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣️'];
+    export const DATE_FORMAT = "MM-DD-yyyy";
+    export const DATE_FORMAT_NO_YEAR = "MM-DD";
 
     export enum HTML_ENTITIES {
         nbsp = ' ',

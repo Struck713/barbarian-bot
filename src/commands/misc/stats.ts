@@ -1,12 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../../lib/command";
-import { Embeds } from "../../utils/embeds";
-import Time from "../../utils/time";
-import { Text } from "../../utils/misc";
-import { VoiceTable, db } from "../../lib/database";
 import { sql } from "kysely";
-import youtube from "../../utils/youtube";
-import axios from "axios";
+import moment from "moment";
+import { Command } from "../../lib/command";
+import { db } from "../../lib/database";
+import { Embeds } from "../../utils/embeds";
+import { Text } from "../../utils/misc";
 
 interface VoiceTrendData {
     count: number;
@@ -34,12 +32,19 @@ export default <Command>{
                 .then(rows => rows[0])
                 .catch(_ => null);
 
-            const data = await sql`SELECT COUNT(*) count, DATE(created) date FROM ${sql.table("voice")} GROUP BY date ORDER BY date DESC LIMIT 15`
-                .execute(db)
-                .then(data => data.rows.map((row: any) => 
+            const data = await db.selectFrom("voice")
+                .select(({ fn }) => [
+                    fn.countAll().as("count"),
+                    sql<string>`DATE(created)`.as("date")
+                ])
+                .groupBy("date")
+                .orderBy("date desc")
+                .limit(15)
+                .execute()
+                .then(data => data.map((row: any) => 
                     <VoiceTrendData>{ 
                         count: row.count, 
-                        date: row.date 
+                        date: moment(row.date).format(Text.DATE_FORMAT_NO_YEAR)
                     }))
                 .catch(_ => null);
 
@@ -56,7 +61,7 @@ export default <Command>{
                   labels,
                   datasets: [
                     {
-                      label: 'Songs Played',
+                      label: 'Recent songs played',
                       data: counts,
                     },
                   ],
@@ -68,14 +73,14 @@ export default <Command>{
             const playedToday = counts[0];
 
             await Embeds.create()
-                // .setTitle("Voice Statistics")
+                .setTitle("Voice Statistics")
                 .setAuthor({ name: `${Text.number(playedRecently, "song")} have been played recently.` })
                 .addFields([
                     { name: "Most recent song", value: recent.video_name, inline: false },
                     { name: "Songs played today", value: Text.number(playedToday, "song"), inline: true },
-                    { name: "Songs played at peak", value: `${Text.number(peak.count, "song")} on ${peak.date}`, inline: true },
+                    { name: "Songs played at peak", value: `${Text.number(peak.count, "song")} on **${peak.date}**`, inline: true },
                 ])
-                .setImage(`https://quickchart.io/chart?c=${encodeURIComponent(chart)}`)
+                .setImage(`https://quickchart.io/chart?c=${encodeURIComponent(chart)}&backgroundColor=white`)
                 .send(interaction);
             return;
         }
