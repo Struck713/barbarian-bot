@@ -7,11 +7,18 @@ const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocook
 // const YOUTUBE_PLAYLIST_QUERY_REGEX = /\?list=(.+)/;
 
 const search = async (query: string): Promise<SongMetadata | undefined> => {
-    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&videoType=any&key=${youtube.api_key}`)
+    const res = await Axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelType=any&eventType=none&q=${query}&type=video&key=${youtube.api_key}`)
                            .then(res => res.data)
                            .catch(_ => undefined);
     if (!res?.items[0]) return undefined;
-    return getMetadata(query, createShareUrl(res.items[0].id.videoId), false);
+
+    const result = res.items[0];
+    if (!result.id.videoId) return undefined;
+
+    const videoId = result.id.videoId;
+    // const url = createShareUrl(videoId);
+    // return new SongMetadata(query, result.snippet.title, result.snippet.channelTitle, url, getThumbnailUrl(videoId), 100);
+    return getMetadata(query, createShareUrl(videoId), false)
 }
 
 // const getPlaylistMetadata = async (url: string): Promise<SongMetadata[] | undefined> => {
