@@ -1,9 +1,11 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
 import { ytdl } from "../app";
-import { SongMetadata } from "../utils/youtube";
+import youtube, { SongMetadata } from "../utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import { db } from "./database";
+
+import config from "../../config.json"
 
 const connections: VoiceConnection[] = [];
 
@@ -91,7 +93,9 @@ export class VoiceConnection {
                 "-",
                 url,
                 "-f",
-                "bestaudio[ext=m4a],bestaudio[ext=webm]"
+                "bestaudio[ext=m4a],bestaudio[ext=webm]",
+                "-u", config.youtube.auth.username,
+                "-p", config.youtube.auth.password
             ]
         );
 

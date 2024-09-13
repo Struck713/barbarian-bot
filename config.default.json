@@ -6,7 +6,11 @@
     },
     "youtube": {
         "api_key": "Youtube API key",
-        "binary_path": "Absolute path to YTDLP"
+        "binary_path": "Absolute path to YTDLP",
+        "auth": {
+            "username": "YouTube account username",
+            "password": "YouTube account password"
+        }
     },
     "database": {
         "path": "database.db"
