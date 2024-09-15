@@ -98,6 +98,8 @@ export class VoiceConnection {
             ]
         );
 
+        process.on('error', (e) => console.log(e));
+
         if (process.ytDlpProcess) {
             this.process = process.ytDlpProcess;
             this.resource = createAudioResource(this.process.stdout);
