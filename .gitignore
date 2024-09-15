@@ -6,3 +6,4 @@ binaries/
 state.lock
 *.token
 *.db
+cookies.txt

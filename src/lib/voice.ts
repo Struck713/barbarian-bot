@@ -89,13 +89,12 @@ export class VoiceConnection {
         if (this.process) this.process.kill();
         const process = ytdl.exec(
             [
+                "--cookies", config.youtube.cookies_path,
                 "-o",
                 "-",
                 url,
                 "-f",
                 "bestaudio[ext=m4a],bestaudio[ext=webm]",
-                "-u", config.youtube.auth.username,
-                "-p", config.youtube.auth.password
             ]
         );
 
