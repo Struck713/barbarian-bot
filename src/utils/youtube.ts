@@ -46,7 +46,7 @@ const getMetadata = async (search: string, url: string, cleanse: boolean = true)
         url = createShareUrl(capture[6]);
     }
 
-    let res = await ytdl.getVideoInfo(url).catch(_ => undefined);
+    let res = await ytdl.getVideoInfo([ url, "--cookies", youtube.cookies_path ]).catch(_ => undefined);
     if (res) return new SongMetadata(search, res.fulltitle, res.channel, url, res.thumbnail, res.duration);
     else return undefined;
 }

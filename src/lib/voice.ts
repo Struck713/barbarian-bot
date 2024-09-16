@@ -1,11 +1,11 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { VoiceBasedChannel } from "discord.js";
 import { ytdl } from "../app";
-import youtube, { SongMetadata } from "../utils/youtube";
+import { SongMetadata } from "../utils/youtube";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import { db } from "./database";
 
-import config from "../../config.json"
+import { youtube } from "../../config.json"
 
 const connections: VoiceConnection[] = [];
 
@@ -89,7 +89,7 @@ export class VoiceConnection {
         if (this.process) this.process.kill();
         const process = ytdl.exec(
             [
-                "--cookies", config.youtube.cookies_path,
+                "--cookies", youtube.cookies_path,
                 "-o",
                 "-",
                 url,
